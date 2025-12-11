@@ -95,9 +95,19 @@ if __name__ == '__main__':
     with open(setting_filename, 'r') as f:
         setting = json.load(f)
 
-    device_index = [0, 1, 2, 3]
+    # choose devices based on what's actually available
     network = eval(args.model.replace('-', '_'))()
-    network = nn.DataParallel(network, device_ids=device_index).cuda()
+    if torch.cuda.is_available():
+        device_count = torch.cuda.device_count()
+        if device_count > 1:
+            device_index = list(range(device_count))
+            network = nn.DataParallel(network, device_ids=device_index).cuda()
+        else:
+            device_index = [0]
+            network = network.cuda()
+    else:
+        device_index = []
+        print('WARNING: CUDA not available, using CPU. Training will be very slow.')
 
     criterion = nn.L1Loss()
 
@@ -111,22 +121,27 @@ if __name__ == '__main__':
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=setting['epochs'],
                                                            eta_min=setting['lr'] * 1e-3)
 
-    train_dir = '/home/jxy/projects_dir/datasets/Raindrop/train'
-    test_a_dir = '/home/jxy/projects_dir/datasets/Raindrop/test_a'
-    test_b_dir = '/home/jxy/projects_dir/datasets/Raindrop/test_b'
-    train_dataset = TrainData(256, train_dir)
+    data_root = os.path.abspath(os.path.expanduser(args.data_dir))
+    train_dir = os.path.join(data_root, 'train')
+    test_a_dir = os.path.join(data_root, 'test_a')
+    test_b_dir = os.path.join(data_root, 'test_b')
+    train_list = os.path.join(data_root, 'raindrop_train.txt')
+    test_a_list = os.path.join(data_root, 'raindrop_test_a.txt')
+    test_b_list = os.path.join(data_root, 'raindrop_test_b.txt')
+
+    train_dataset = TrainData(256, train_dir, list_path=train_list)
     train_loader = DataLoader(train_dataset,
                               batch_size=setting['batch_size'],
                               shuffle=True,
                               num_workers=args.num_workers,
                               pin_memory=True,
                               drop_last=True)
-    test_a = Test_a(test_a_dir)
+    test_a = Test_a(test_a_dir, list_path=test_a_list)
     Testa = DataLoader(test_a,
                               batch_size=1,
                               num_workers=args.num_workers,
                               pin_memory=True)
-    test_b = Test_b(test_b_dir)
+    test_b = Test_b(test_b_dir, list_path=test_b_list)
     Testb = DataLoader(test_b,
                               batch_size=1,
                               num_workers=args.num_workers,

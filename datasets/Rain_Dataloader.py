@@ -144,11 +144,12 @@ def align(imgs=[], size_H=448, size_W=608):
 # --- Training dataset --- #
 # train_data_dir: /home/jxy/projects_dir/datasets/Rain/train
 class TrainData_for_Rain100H(data.Dataset):
-    def __init__(self, crop_size, train_data_dir, only_h_flip=False):
+    def __init__(self, crop_size, train_data_dir, list_path=None, only_h_flip=False):
         super().__init__()
-        train_list_rain = '/home/jxy/projects_dir/datasets/Rain100/rain_data_train_Heavy/rain/X2/LIST.TXT'
+        if list_path is None:
+            list_path = os.path.join(train_data_dir, 'rain', 'X2', 'LIST.TXT')
 
-        with open(train_list_rain) as f:
+        with open(list_path) as f:
             contents = f.readlines()
             rain_names = [i.strip() for i in contents]
             gt_names = rain_names
@@ -181,11 +182,12 @@ class TrainData_for_Rain100H(data.Dataset):
         return len(self.rain_names)
 
 class TrainData_for_Rain100L(data.Dataset):
-    def __init__(self, crop_size, train_data_dir, only_h_flip=False):
+    def __init__(self, crop_size, train_data_dir, list_path=None, only_h_flip=False):
         super().__init__()
-        train_list_rain = '/home/jxy/projects_dir/datasets/Rain100/rain_data_train_Light/rain/LIST.TXT'
+        if list_path is None:
+            list_path = os.path.join(train_data_dir, 'rain', 'LIST.TXT')
 
-        with open(train_list_rain) as f:
+        with open(list_path) as f:
             contents = f.readlines()
             rain_names = [i.strip() for i in contents]
             gt_names = rain_names
@@ -420,12 +422,13 @@ class TestData(data.Dataset):
 
 
 class TestData_for_Rain100H(data.Dataset):
-    def __init__(self, local_size, val_data_dir, flag=True):
+    def __init__(self, local_size, val_data_dir, list_path=None, flag=True):
         super().__init__()
 
-        val_list_rain = "/home/jxy/projects_dir/datasets/Rain100/rain_heavy_test/rain/X2/LIST.TXT"
+        if list_path is None:
+            list_path = os.path.join(val_data_dir, 'rain', 'X2', 'LIST.TXT')
 
-        with open(val_list_rain) as f:
+        with open(list_path) as f:
             contents = f.readlines()
             rain_names = [i.strip() for i in contents]
             gt_names = rain_names
@@ -462,12 +465,13 @@ class TestData_for_Rain100H(data.Dataset):
 
 
 class TestData_for_Rain100L(data.Dataset):
-    def __init__(self, local_size, val_data_dir, flag=True):
+    def __init__(self, local_size, val_data_dir, list_path=None, flag=True):
         super().__init__()
 
-        val_list_rain = "/home/jxy/projects_dir/datasets/Rain100/rain_data_test_Light/rain/X2/LIST.TXT"
+        if list_path is None:
+            list_path = os.path.join(val_data_dir, 'rain', 'X2', 'LIST.TXT')
 
-        with open(val_list_rain) as f:
+        with open(list_path) as f:
             contents = f.readlines()
             rain_names = [i.strip() for i in contents]
             gt_names = rain_names

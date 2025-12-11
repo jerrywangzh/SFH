@@ -139,11 +139,12 @@ def align(imgs=[], size_H=448, size_W=608):
 # --- Training dataset --- #
 # train_data_dir: /home/jxy/projects_dir/datasets/Rain/train
 class TrainData(data.Dataset):
-    def __init__(self, crop_size, train_data_dir, only_h_flip=False):
+    def __init__(self, crop_size, train_data_dir, list_path=None, only_h_flip=False):
         super().__init__()
-        train_list_rain = '/home/jxy/projects_dir/datasets/Raindrop/raindrop_train.txt'
-
-        with open(train_list_rain) as f:
+        # default list path: sibling of the train folder (…/Raindrop/raindrop_train.txt)
+        if list_path is None:
+            list_path = os.path.join(os.path.dirname(train_data_dir.rstrip('/')), 'raindrop_train.txt')
+        with open(list_path) as f:
             contents = f.readlines()
             rain_names = [i.strip() for i in contents]
             # gt_names = rain_names
@@ -176,12 +177,13 @@ class TrainData(data.Dataset):
 
 
 class Test_a(data.Dataset):
-    def __init__(self, val_data_dir, flag=True):
+    def __init__(self, val_data_dir, list_path=None, flag=True):
         super().__init__()
 
-        val_list_haze = '/home/jxy/projects_dir/datasets/Raindrop/raindrop_test_a.txt'
+        if list_path is None:
+            list_path = os.path.join(os.path.dirname(val_data_dir.rstrip('/')), 'raindrop_test_a.txt')
 
-        with open(val_list_haze) as f:
+        with open(list_path) as f:
             contents = f.readlines()
             haze_names = [i.strip() for i in contents]
             gt_names = [i.split('_')[0] + '_clean.png' for i in haze_names]
@@ -217,11 +219,12 @@ class Test_a(data.Dataset):
 
 # val_data_dir: /home/jxy/projects_dir/datasets/Rain/test
 class Test_b(data.Dataset):
-    def __init__(self, val_data_dir, flag=True):
+    def __init__(self, val_data_dir, list_path=None, flag=True):
         super().__init__()
-        val_list_rain = "/home/jxy/projects_dir/datasets/Raindrop/raindrop_test_b.txt"
+        if list_path is None:
+            list_path = os.path.join(os.path.dirname(val_data_dir.rstrip('/')), 'raindrop_test_b.txt')
 
-        with open(val_list_rain) as f:
+        with open(list_path) as f:
             contents = f.readlines()
             rain_names = [i.strip() for i in contents]
             gt_names = [i.split('_')[0] + '_clean.jpg' for i in rain_names]

@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader, RandomSampler
 from tensorboardX import SummaryWriter
 from tqdm import tqdm
 from utils import AverageMeter
-from datasets.Rain_Dataloader import TrainData_for_Rain100H, TestData_for_Rain100H
+from datasets.Rain_Dataloader import TrainData_for_Rain100L, TestData_for_Rain100L
 from numpy import *
 import numpy as np
 from matplotlib import pyplot as plt
@@ -96,9 +96,16 @@ if __name__ == '__main__':
     with open(setting_filename, 'r') as f:
         setting = json.load(f)
 
-    device_index = [0, 1, 2, 3]
     network = eval(args.model.replace('-', '_'))()
-    network = nn.DataParallel(network, device_ids=device_index).cuda()
+    if torch.cuda.is_available():
+        device_count = torch.cuda.device_count()
+        if device_count > 1:
+            device_index = list(range(device_count))
+            network = nn.DataParallel(network, device_ids=device_index).cuda()
+        else:
+            network = network.cuda()
+    else:
+        print('WARNING: CUDA not available, using CPU. Training will be very slow.')
 
     criterion = nn.L1Loss()
 
@@ -112,9 +119,10 @@ if __name__ == '__main__':
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=setting['epochs'],
                                                            eta_min=1e-6)
 
-    train_dir = '/home/jxy/projects_dir/datasets/Rain100/rain_data_train_Heavy'
-    test_dir = '/home/jxy/projects_dir/datasets/Rain100/rain_heavy_test'
-    train_dataset = TrainData_for_Rain100H(256, train_dir)
+    data_root = os.path.abspath(os.path.expanduser(args.data_dir))
+    train_dir = os.path.join(data_root, 'rain_data_train_Light')
+    test_dir = os.path.join(data_root, 'rain_data_test_Light')
+    train_dataset = TrainData_for_Rain100L(256, train_dir)
     train_loader = DataLoader(train_dataset,
                               batch_size=setting['batch_size'],
                               shuffle=True,
@@ -122,7 +130,7 @@ if __name__ == '__main__':
                               pin_memory=True,
                               drop_last=True)
 
-    test_dataset = TestData_for_Rain100H(8, test_dir)
+    test_dataset = TestData_for_Rain100L(8, test_dir)
     test_loader = DataLoader(test_dataset,
                              batch_size=1,
                              shuffle=True,
