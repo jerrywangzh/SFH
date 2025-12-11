@@ -19,16 +19,16 @@ gdown==4.7.1
 google-auth==1.7.1
 google-auth-oauthlib==0.4.1
 grpcio==1.62.2
-h5py==3.8.0
+h5py>=3.12
 huggingface-hub==0.12.0
 idna==2.8
-imageio==2.6.1
+imageio>=2.33
 imgaug==0.4.0
 importlib-metadata==6.0.0
 iopath==0.1.10
 joblib==1.2.0
-kiwisolver==1.4.4
-
+kiwisolver>=1.4.5
+cppy>=1.2.1  
 # 👉 为了支持 Python 3.12，把 line-profiler 升到支持 3.12 的版本
 line-profiler>=4.1.2
 
@@ -45,18 +45,18 @@ Markdown==3.1.1
 markdown-it-py==2.2.0
 MarkupSafe==2.1.2
 matlab==0.1
-matplotlib==3.5.3
+matplotlib>=3.8.3
 mdurl==0.1.2
 
 # 👉 numpy 原来锁在 1.23.5，numba 新版本需要至少 1.24，
 #    而 Colab 自带的是 numpy 2.0.2，所以放宽成一个区间
-numpy>=1.24,<2.2
+numpy>=1.26,<2.2
 
 mmcv==2.0.0
 mmengine==0.7.2
 natsort==8.3.1
 netron==8.7.7
-networkx==2.8.8
+networkx>=3.0
 
 # ⛔ 下面三行是给 torch 1.13.1 打的 CUDA 11 库，在 Colab + torch 2.8 上不要再装
 # nvidia-cublas-cu11==11.10.3.66
@@ -66,10 +66,10 @@ networkx==2.8.8
 oauthlib==3.1.0
 olefile==0.46
 openai-clip==1.0.1
-opencv-python==4.5.5.62
+opencv-python>=4.10.0.84
 packaging==23.0
-pandas==1.3.5
-Pillow==9.5.0
+pandas>=2.2.2
+Pillow>=10.1.0
 portalocker==2.7.0
 progressbar2==4.2.0
 protobuf==3.10.0
@@ -80,25 +80,28 @@ pyiqa==0.1.10
 pynvml==11.5.0
 pyparsing==3.0.9
 PySocks==1.7.1
-python-dateutil==2.8.2
+python-dateutil>=2.8.2,<3
 python-utils==3.5.2
 pytorch-msssim==0.2.1
 pytorch-ssim==0.1
 pytorch-wavelets==1.3.0
 pytz==2022.7.1
-PyWavelets==1.3.0
-PyYAML==6.0
+PyWavelets>=1.6.0
+
+# 👉 PyYAML 6.0 没有 Python 3.12 的预编译轮子，会尝试用 Cython 源码构建从而报 cython_sources 错
+PyYAML>=6.0.1
 regex==2024.4.16
 requests==2.22.0
 requests-oauthlib==1.3.0
 rich==13.3.4
 rsa==4.0
 safetensors==0.4.5
-scikit-image==0.20.0
-scikit-learn==1.0.2
-scipy==1.10.1
+# 👉 scikit-image 0.20 没有 Python 3.12 的轮子，会走 Meson 源码编译并卡在 Python dependency
+scikit-image>=0.25.0
+scikit-learn==1.4.2
+scipy>=1.13.0,<2.0
 shapely==2.0.7
-six==1.13.0
+six>=1.16.0
 soupsieve==2.4.1
 stories==0.10.1
 tabulate==0.9.0
@@ -109,7 +112,7 @@ tensorlayer==2.2.5
 termcolor==2.3.0
 thop==0.1.1.post2209072238
 threadpoolctl==3.1.0
-tifffile==2021.11.2
+tifffile>=2023.0.0
 timm==0.9.7
 tomli==2.0.1
 
