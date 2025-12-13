@@ -6,6 +6,6 @@
     "only_h_flip": false,
     "optimizer": "adamw",
     "lr": 1e-3,
-    "epochs":1000,
+    "epochs":100,
     "eval_freq": 1
 }
