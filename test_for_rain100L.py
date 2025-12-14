@@ -1,6 +1,3 @@
-# test_for_rain100L.py
-# 放在 SFHformer 仓库根目录：/mnt/e/collegeitem/.../SFHformer/test_for_rain100L.py
-
 import os
 import argparse
 from collections import OrderedDict
@@ -62,14 +59,12 @@ def build_and_load_model():
     # 如果想严格检查，可以改成 strict=True 看看有没有真正不匹配的参数。
     incompatible = net.load_state_dict(new_state_dict, strict=False)
 
-    # 打印一下 missing / unexpected，方便你排查
     try:
         if len(incompatible.missing_keys) > 0:
             print('[Warning] Missing keys:', incompatible.missing_keys)
         if len(incompatible.unexpected_keys) > 0:
             print('[Warning] Unexpected keys:', incompatible.unexpected_keys)
     except AttributeError:
-        # 旧版本 PyTorch load_state_dict 返回 None，忽略即可
         pass
 
     net.eval()
@@ -79,11 +74,9 @@ def build_and_load_model():
 def main():
     os.makedirs(args.save_dir, exist_ok=True)
 
-    # 1. 模型 + 权重
     net, device = build_and_load_model()
 
     # 2. 构建测试集 DataLoader
-    # 注意：这里 local_size=8 只是 Rain_Dataloader 里原来 valid 使用的设置
     test_dataset = TestData_for_Rain100L(local_size=8,
                                          val_data_dir=args.data_dir)
     test_loader = DataLoader(test_dataset,
